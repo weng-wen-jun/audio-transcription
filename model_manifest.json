@@ -1,0 +1,37 @@
+{
+  "format": 1,
+  "models": {
+    "fun_asr_nano": {
+      "repository": "FunAudioLLM/Fun-ASR-Nano-2512",
+      "revision": "272c57b82523ada6fd87095e955f8e29100979ab",
+      "local_dir": "models/fun-asr-nano-2512",
+      "artifacts": {
+        "model.pt": "55ae0d2fee369f0f11cce0795f6927934ad17cf11b278a7e56a51272074160bb",
+        "config.yaml": "daed38ea6484f5650fb32cbd9069b9aa13880acaf2bcb1f0bf4be2712837917c",
+        "configuration.json": "b64a3a55d35bcbe2cf4d31f2d3ef25a423d3ba2ebff203298c27fa055f3c7612",
+        "multilingual.tiktoken": "747979631e813193436aabcff7c1c235d37de8097b71c563ec8b63b7a515c718"
+      }
+    },
+    "fsmn_vad": {
+      "repository": "funasr/fsmn-vad",
+      "revision": "df20e6b30c653645fa4ff125cacfcabd1020a669",
+      "local_dir": "models/fsmn-vad",
+      "artifacts": {
+        "model.pt": "b3be75be477f0780277f3bae0fe489f48718f585f3a6e45d7dd1fbb1a4255fc5",
+        "config.yaml": "486861ca26ddb79081663b6179cb204c6bfae71c52f04aafc48a9e9d8dde1e93",
+        "configuration.json": "7bce8867e37d55c3dd8f672695ced18077a2be199ea529a5d432d5350fc0acba",
+        "am.mvn": "df189fd5f4352df84a0fd464eeab4e450a5e645665d6b38f13c832492261a739"
+      }
+    },
+    "campplus": {
+      "repository": "funasr/campplus",
+      "revision": "e4b6ede7ce16997aff4ae69fbca1f0175e2afede",
+      "local_dir": "models/campplus",
+      "artifacts": {
+        "campplus_cn_common.bin": "3388cf5fd3493c9ac9c69851d8e7a8badcfb4f3dc631020c4961371646d5ada8",
+        "config.yaml": "17342041bd5b22f6fd7e32f6e7a267b0bf65f018c0a721bada6547e3d28fbfc9",
+        "configuration.json": "6f7acaf1e81ca121f4a3c71b6ddb66beec24350a3ef330e2c846f17829176a8f"
+      }
+    }
+  }
+}
