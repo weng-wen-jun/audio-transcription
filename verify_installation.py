@@ -15,6 +15,7 @@ EXPECTED_PACKAGES = {
     "funasr": "1.4.4",
     "huggingface-hub": "1.29.0",
     "modelscope": "1.39.1",
+    "opencc-python-reimplemented": "0.1.7",
     "torch": "2.11.0+cu128",
     "torchaudio": "2.11.0+cu128",
     "transformers": "5.16.1",

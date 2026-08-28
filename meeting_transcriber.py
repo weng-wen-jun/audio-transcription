@@ -22,8 +22,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from opencc import OpenCC
+
 ROOT = Path(__file__).resolve().parent
-APP_VERSION = "1.0.0"
+APP_VERSION = "1.0.2"
 ENV = ROOT / "env"
 MODEL_PATH = ROOT / "models" / "fun-asr-nano-2512"
 VAD_MODEL_PATH = ROOT / "models" / "fsmn-vad"
@@ -43,6 +45,8 @@ ASR_PAD_BEFORE_MILLISECONDS = 200
 ASR_PAD_AFTER_MILLISECONDS = 300
 MAX_ASR_HOTWORDS = 50
 SPEAKER_BATCH_SIZE = 48
+TRADITIONAL_CHINESE_CONVERSION = "OpenCC s2twp"
+TRADITIONAL_CHINESE_CONVERTER = OpenCC("s2twp")
 SINGLE_INSTANCE_MUTEX = r"Local\MeetingTranscriberTool-6F99E559-4D26-4D32-AF80-2A7B31506378"
 _single_instance_handle: Any | None = None
 
@@ -177,6 +181,37 @@ def render_transcript(record: dict[str, Any]) -> str:
         if text:
             lines.append(f"[{start}–{end}] {label}：{text}")
     return "\n".join(lines) or str(record.get("text", "")).strip()
+
+
+def traditional_chinese_output_record(record: dict[str, Any]) -> dict[str, Any]:
+    """Copy a completed Chinese transcript into Traditional Chinese for export.
+
+    ASR work files deliberately stay untouched so checkpoint reuse and diagnosis
+    retain the model's original result.  Only the final TXT and JSON exports use
+    this copy.
+    """
+    output_record = dict(record)
+    text = output_record.get("text")
+    if isinstance(text, str):
+        output_record["text"] = TRADITIONAL_CHINESE_CONVERTER.convert(text)
+
+    sentences = output_record.get("sentence_info")
+    if not isinstance(sentences, list):
+        return output_record
+
+    converted_sentences: list[Any] = []
+    for sentence in sentences:
+        if not isinstance(sentence, dict):
+            converted_sentences.append(sentence)
+            continue
+        converted_sentence = dict(sentence)
+        for field in ("text", "sentence"):
+            value = converted_sentence.get(field)
+            if isinstance(value, str):
+                converted_sentence[field] = TRADITIONAL_CHINESE_CONVERTER.convert(value)
+        converted_sentences.append(converted_sentence)
+    output_record["sentence_info"] = converted_sentences
+    return output_record
 
 
 def audio_duration_seconds(audio: Path) -> float | None:
@@ -881,6 +916,8 @@ class MeetingTranscriberApp:
                 self.events.put(("log", f"Fun-ASR 語言已鎖定為{asr_language}；已啟用文字正規化。"))
             else:
                 self.events.put(("log", "Fun-ASR 使用自動語言判斷。"))
+            if language == "zh":
+                self.events.put(("log", "中文最終輸出會轉為繁體（臺灣用字，OpenCC s2twp）。"))
             if hotwords:
                 self.events.put(("log", f"已套用 {len(hotwords)} 個 ASR 熱詞。"))
 
@@ -1095,7 +1132,8 @@ class MeetingTranscriberApp:
 
             save_started_at = time.monotonic()
             record["sentence_info"] = merge_adjacent_sentences(record["sentence_info"])
-            transcript = render_transcript(record)
+            output_record = traditional_chinese_output_record(record) if language == "zh" else record
+            transcript = render_transcript(output_record)
 
             stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
             base = f"{audio.stem}_{stamp}"
@@ -1116,9 +1154,10 @@ class MeetingTranscriberApp:
                         "asr_work_blocks": len(asr_work_blocks),
                         "asr_language_hint": asr_language,
                         "asr_hotwords": hotwords,
+                        "text_conversion": TRADITIONAL_CHINESE_CONVERSION if language == "zh" else None,
                         "asr_segment_settings": manifest["asr_segment_settings"],
                         "work_directory": str(work_dir),
-                        "result": record,
+                        "result": output_record,
                     },
                     ensure_ascii=False,
                     indent=2,

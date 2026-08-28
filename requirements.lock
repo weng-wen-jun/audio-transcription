@@ -47,6 +47,7 @@ networkx==3.6.1
 numba==0.67.0
 numpy==2.4.6
 omegaconf==2.3.1
+opencc-python-reimplemented==0.1.7
 oss2==2.19.1
 packaging==26.3
 pip==26.2.1

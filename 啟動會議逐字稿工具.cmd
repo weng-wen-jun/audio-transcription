@@ -1,8 +1,6 @@
 @echo off
-setlocal
+setlocal DisableDelayedExpansion
 set "ROOT=%~dp0"
-set "HF_HOME=%ROOT%\models\huggingface"
-set "PATH=%ROOT%\runtime\Library\bin;%ROOT%\env\Library\bin;%PATH%"
 set "PYTHONW=%ROOT%\runtime\Scripts\pythonw.exe"
 if not exist "%PYTHONW%" set "PYTHONW=%ROOT%\env\Scripts\pythonw.exe"
 if not exist "%PYTHONW%" set "PYTHONW=%ROOT%\env\pythonw.exe"
