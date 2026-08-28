@@ -9,7 +9,7 @@ import sys
 from typing import Any
 
 from download_models import load_manifest, verify_model
-from meeting_transcriber import bundled_ffmpeg_executable
+from meeting_transcriber import APP_VERSION, bundled_ffmpeg_executable
 
 EXPECTED_PACKAGES = {
     "funasr": "1.4.4",
@@ -59,6 +59,7 @@ def main() -> None:
 
     report: dict[str, Any] = {
         "ready": not errors,
+        "application_version": f"V{APP_VERSION}",
         "python": sys.version.split()[0],
         "packages": versions,
         "cuda_available": cuda_available,

@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parent
+APP_VERSION = "1.0.0"
 ENV = ROOT / "env"
 MODEL_PATH = ROOT / "models" / "fun-asr-nano-2512"
 VAD_MODEL_PATH = ROOT / "models" / "fsmn-vad"
@@ -513,6 +514,7 @@ def check_installation() -> dict[str, Any]:
     import torch
 
     return {
+        "application_version": f"V{APP_VERSION}",
         "model_present": MODEL_PATH.is_dir(),
         "vad_model_present": VAD_MODEL_PATH.is_dir(),
         "campplus_model_present": CAMPLUS_MODEL_PATH.is_dir(),
@@ -538,7 +540,7 @@ class MeetingTranscriberApp:
         self.events: queue.Queue[tuple[str, Any]] = queue.Queue()
         self.run_log_lines: list[str] = []
         self.root = tk.Tk()
-        self.root.title("本機會議逐字稿工具")
+        self.root.title(f"本機會議逐字稿工具 V{APP_VERSION}")
         self.root.minsize(780, 630)
 
         self.audio_path = tk.StringVar()
@@ -1105,6 +1107,7 @@ class MeetingTranscriberApp:
                     {
                         "source_audio": str(audio),
                         "created_at": datetime.now().isoformat(timespec="seconds"),
+                        "application_version": f"V{APP_VERSION}",
                         "model": "Fun-ASR-Nano-2512",
                         "speaker_diarization": speakers,
                         "speaker_diarization_scope": "global" if speakers else "disabled",

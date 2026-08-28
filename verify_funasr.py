@@ -15,6 +15,7 @@ from meeting_transcriber import (
     CAMPLUS_MODEL_REPOSITORY,
     CAMPLUS_MODEL_REVISION,
     MODEL_PATH,
+    APP_VERSION,
     VAD_MODEL_PATH,
     VAD_MODEL_REPOSITORY,
     VAD_MODEL_REVISION,
@@ -57,6 +58,7 @@ def main() -> None:
         json.dumps(
             {
                 "status": "passed",
+                "application_version": f"V{APP_VERSION}",
                 "torch": torch.__version__,
                 "cuda_device": torch.cuda.get_device_name(0),
                 "ffmpeg_available": bundled_ffmpeg_executable() is not None,
