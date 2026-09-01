@@ -25,7 +25,7 @@ from typing import Any
 from opencc import OpenCC
 
 ROOT = Path(__file__).resolve().parent
-APP_VERSION = "1.0.2"
+APP_VERSION = "1.0.0"
 ENV = ROOT / "env"
 MODEL_PATH = ROOT / "models" / "fun-asr-nano-2512"
 VAD_MODEL_PATH = ROOT / "models" / "fsmn-vad"
@@ -907,7 +907,7 @@ class MeetingTranscriberApp:
                 False,
             )))
             self.events.put(("progress", (
-                20,
+                progress_percent(0, len(asr_work_blocks)),
                 f"ASR 工作區塊：0/{len(asr_work_blocks)}",
                 False,
             )))
@@ -963,7 +963,7 @@ class MeetingTranscriberApp:
 
                 if block_results is None or len(block_results) != len(block_segments):
                     self.events.put(("progress", (
-                        20 + 45 * block_index / len(asr_work_blocks),
+                        progress_percent(block_index, len(asr_work_blocks)),
                         f"ASR 工作區塊：{block_index}/{len(asr_work_blocks)}（正在辨識第 {block_index + 1} 個）",
                         False,
                     )))
@@ -994,7 +994,7 @@ class MeetingTranscriberApp:
 
                 all_asr_results.extend(block_results)
                 self.events.put(("progress", (
-                    20 + 45 * (block_index + 1) / len(asr_work_blocks),
+                    progress_percent(block_index + 1, len(asr_work_blocks)),
                     f"ASR 工作區塊：{block_index + 1}/{len(asr_work_blocks)} 已完成",
                     False,
                 )))
@@ -1139,7 +1139,7 @@ class MeetingTranscriberApp:
             base = f"{audio.stem}_{stamp}"
             transcript_json = output / f"{base}_逐字稿.json"
             transcript_text = output / f"{base}_逐字稿.txt"
-            self.events.put(("progress", (86, "逐字稿已完成，正在儲存檔案…")))
+            self.events.put(("progress", (100, "逐字稿已完成，正在儲存檔案…")))
             transcript_json.write_text(
                 json.dumps(
                     {
@@ -1167,7 +1167,7 @@ class MeetingTranscriberApp:
             )
             transcript_text.write_text(transcript, encoding="utf-8")
             record_timing("整理並儲存逐字稿", save_started_at)
-            self.events.put(("progress", (90, "逐字稿已儲存")))
+            self.events.put(("progress", (100, "逐字稿已儲存")))
             self.events.put(("log", f"逐字稿已完成：{transcript_text.name}"))
 
             processing_finished_at = datetime.now()
